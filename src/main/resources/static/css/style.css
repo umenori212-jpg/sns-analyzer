@@ -1,0 +1,64 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+}
+
+.upload-area {
+    border: 2px dashed #dee2e6;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.upload-area:hover, .upload-area.drag-over {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}
+
+.score-circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 6px solid;
+}
+.score-high { border-color: #198754; background-color: #d1e7dd; color: #0a3622; }
+.score-mid  { border-color: #ffc107; background-color: #fff3cd; color: #664d03; }
+.score-low  { border-color: #dc3545; background-color: #f8d7da; color: #58151c; }
+.score-number { font-size: 1.8rem; font-weight: 800; line-height: 1; }
+.score-max { font-size: 0.7rem; opacity: 0.7; }
+
+/* ハッシュタグ：白背景・黒枠・黒文字 */
+.hashtag-badge {
+    display: inline-block;
+    padding: 0.4rem 0.85rem;
+    border-radius: 20px;
+    border: 1.5px solid #212529;
+    background-color: #ffffff;
+    color: #212529;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.hashtag-badge:hover {
+    background-color: #212529;
+    color: #ffffff;
+}
+
+/* 投稿文 */
+.caption-text {
+    font-size: 1rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.card {
+    animation: fadeInUp 0.4s ease both;
+}

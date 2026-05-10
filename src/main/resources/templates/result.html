@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分析結果 - SNS動画分析AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">
+            SNS動画分析AI
+        </a>
+        <a href="/" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>新しく分析
+        </a>
+    </div>
+</nav>
+
+<div class="container py-5">
+
+    <!-- エラー時 -->
+    <div th:if="${!result.success}">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 text-center">
+                <div class="card border-danger shadow rounded-4 p-5">
+                    <i class="bi bi-exclamation-circle" style="font-size: 3rem; color: #f06a78;"></i>
+                    <h4 class="mt-3 fw-bold">分析に失敗しました</h4>
+                    <p class="text-muted" th:text="${result.errorMessage}"></p>
+                    <a href="/" class="btn btn-danger" style="background:#f06a78; color:white; border:none;"><i class="bi bi-arrow-left me-2"></i>やり直す</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成功時 -->
+    <div th:if="${result.success}">
+
+        <div class="text-center mb-5">
+            <h2 class="fw-bold"><i class="bi bi-bar-chart-line me-2" style="color:#f06a78;"></i>分析結果</h2>
+            <p class="text-muted">
+                <i class="bi bi-file-play me-1"></i>
+                <span th:text="${result.fileName}"></span>
+            </p>
+        </div>
+
+        <!-- スコア・ジャンル・ターゲット -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 text-center">
+                    <div class="card-body p-4">
+                        <p class="text-muted small mb-2">バズりやすさスコア</p>
+                        <div class="score-circle mx-auto mb-2"
+                             th:classappend="${result.overallScore >= 70 ? 'score-high' :
+                                              result.overallScore >= 40 ? 'score-mid' : 'score-low'}">
+                            <span class="score-number" th:text="${result.overallScore}"></span>
+                            <span class="score-max">/100</span>
+                        </div>
+                        <div class="progress mt-2" style="height:8px;">
+                            <div class="progress-bar"
+                                 th:classappend="${result.overallScore >= 70 ? 'bg-success' :
+                                                  result.overallScore >= 40 ? 'bg-warning' : 'bg-danger'}"
+                                 th:style="'width:' + ${result.overallScore} + '%'"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 text-center">
+                    <div class="card-body p-4">
+                        <p class="text-muted small mb-2">動画ジャンル</p>
+                        <div class="display-6 mb-2">🎭</div>
+                        <h4 class="fw-bold text-primary" th:text="${result.genre}"></h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-people-fill me-1 text-success"></i>想定ターゲット
+                        </p>
+                        <p class="fw-semibold mb-0" th:text="${result.targetAudience}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 英語投稿文 -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-pencil-square text-primary me-2"></i>英語投稿文
+                    </h5>
+                    <button class="btn btn-outline-primary btn-sm" id="copyCaption">
+                        <i class="bi bi-clipboard me-1"></i>コピー
+                    </button>
+                </div>
+                <div class="bg-light rounded-3 p-3 mb-3">
+                    <p class="mb-0 caption-text" id="captionText" th:text="${result.postCaption}"></p>
+                </div>
+                <div th:if="${result.postCaptionJa != null and !result.postCaptionJa.isEmpty()}">
+                    <p class="text-muted small mb-1">
+                        <i class="bi bi-translate me-1"></i>日本語訳
+                    </p>
+                    <div class="border rounded-3 p-3 bg-white">
+                        <p class="mb-0 text-muted" th:text="${result.postCaptionJa}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 英語ハッシュタグ -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-hash me-2"></i>英語ハッシュタグ
+                    </h5>
+                    <button class="btn btn-outline-dark btn-sm" id="copyHashtags">
+                        <i class="bi bi-clipboard me-1"></i>コピー
+                    </button>
+                </div>
+                <div class="d-flex flex-wrap gap-2" id="hashtagArea">
+                    <span th:each="tag : ${result.hashtags}"
+                          class="hashtag-badge"
+                          th:text="'#' + ${tag}"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-lg px-5" style="background:#f06a78; color:white; border:none;">
+                <i class="bi bi-arrow-repeat me-2"></i>別のファイルを分析する
+            </a>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center text-muted py-4 mt-5 border-top">
+    <small>SNS動画分析AI | Powered by Google Gemini API </small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.getElementById('copyCaption')?.addEventListener('click', function () {
+    const text = document.getElementById('captionText').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        this.innerHTML = '<i class="bi bi-check-lg me-1"></i>コピー完了！';
+        this.classList.replace('btn-outline-primary', 'btn-success');
+        setTimeout(() => {
+            this.innerHTML = '<i class="bi bi-clipboard me-1"></i>コピー';
+            this.classList.replace('btn-success', 'btn-outline-primary');
+        }, 2000);
+    });
+});
+
+document.getElementById('copyHashtags')?.addEventListener('click', function () {
+    const tags = Array.from(document.querySelectorAll('#hashtagArea .hashtag-badge'))
+        .map(el => el.textContent.trim()).join(' ');
+    navigator.clipboard.writeText(tags).then(() => {
+        this.innerHTML = '<i class="bi bi-check-lg me-1"></i>コピー完了！';
+        this.classList.replace('btn-outline-dark', 'btn-success');
+        setTimeout(() => {
+            this.innerHTML = '<i class="bi bi-clipboard me-1"></i>コピー';
+            this.classList.replace('btn-success', 'btn-outline-dark');
+        }, 2000);
+    });
+});
+</script>
+</body>
+</html>
